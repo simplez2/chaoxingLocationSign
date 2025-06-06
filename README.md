@@ -11,8 +11,8 @@
 
 同时，请确保已经安装了以下的python包，如果没有，可执行下列命令进行安装
 
-```
-pip install requests pycryptodome
+```bash
+pip install requests pycryptodome Flask
 ```
 
 ## 2.1.使用git进行下载
@@ -68,6 +68,18 @@ location_geography = '104.19107,30.827562'
 address_name = "中国四川省成都市xxxxxx"
 ```
 
+此外，脚本也可以从环境变量读取这些配置，并支持通过 `COURSE_INDEX` 指定课程序号实现无交互运行：
+
+```bash
+export USERNAME=18888888888
+export PASSWORD=**********
+export LOCATION_GEOGRAPHY="104.19107,30.827562"
+export ADDRESS_NAME="中国四川省成都市xxxxxx"
+# 自动选择第一门课程
+export COURSE_INDEX=1
+python location_sign.py
+```
+
 ## 3.2.运行程序
 
 进入到项目根目录，然后执行python脚本
@@ -79,6 +91,46 @@ python ./location_sign.py
 将会弹出以下内容，然后按照内容提示输入签到的课程序号，将针对该课程进行定位签到
 
 ![image-20240926203942120](README.assets/image-20240926203942120.png)
+
+## 3.3.Docker运行
+
+如果你在服务器上使用Docker，也可以通过构建容器来运行此脚本。
+
+首先在项目根目录构建镜像：
+
+```bash
+docker build -t chaoxing-sign .
+```
+
+然后以环境变量方式传入账号信息和签到配置并启动容器：
+
+```bash
+docker run --rm -it \
+  -e USERNAME=18888888888 \
+  -e PASSWORD=********** \
+  -e LOCATION_GEOGRAPHY="104.19107,30.827562" \
+  -e ADDRESS_NAME="中国四川省成都市xxxxxx" \
+  chaoxing-sign
+```
+
+环境变量会覆盖`location_sign.py`中对应的默认参数，方便在不同环境中部署。
+
+### 3.4. Web 界面
+
+项目新增了基于 Flask 的简单 Web 界面 `webapp.py`，运行后可以在浏览器中完成登录与签到操作：
+
+```bash
+pip install Flask
+python webapp.py
+```
+
+在 Docker 中启动 Web 界面：
+
+```bash
+docker run --rm -p 5000:5000 chaoxing-sign python webapp.py
+```
+
+浏览器访问 `http://localhost:5000` 即可使用图形界面进行签到。
 
 
 
