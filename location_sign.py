@@ -4,14 +4,15 @@ from api import check_activity
 from api import get_course
 from api import login
 from api import get_account_username
+import os
 
-username = "18888888888"  # 手机号
-password = "**********"  # 密码
+username = os.getenv("USERNAME", "18888888888")  # 手机号
+password = os.getenv("PASSWORD", "**********")  # 密码
 
 # https://api.map.baidu.com/lbsapi/getpoint/
 
 # 思学楼c区定位坐标
-location_geography = '104.19107,30.827562'
+location_geography = os.getenv("LOCATION_GEOGRAPHY", '104.19107,30.827562')
 
 # 博学楼B区定位坐标
 # location_geography = '104.192916,30.828876'
@@ -21,7 +22,7 @@ longitude = float(location_geography.split(',')[0])
 latitude = float(location_geography.split(',')[1])
 
 
-address_name = "中国四川省成都市新都区新都街道南环路"
+address_name = os.getenv("ADDRESS_NAME", "中国四川省成都市新都区新都街道南环路")
 
 
 result = login(username, password)
@@ -41,7 +42,12 @@ for index, course in enumerate(courseList):
     print(index+1, ":", course.courseName, " ", course.teacherName)
 
 
-selected_course = input("请输入要签到的课程的序号: ")
+course_index_env = os.getenv("COURSE_INDEX")
+if course_index_env:
+    print(f"使用环境变量COURSE_INDEX={course_index_env}")
+    selected_course = course_index_env
+else:
+    selected_course = input("请输入要签到的课程的序号: ")
 try:
     course = courseList[int(selected_course)-1]
 except Exception as e:
